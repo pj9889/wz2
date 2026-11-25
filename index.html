@@ -14,6 +14,7 @@
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
         body, html {
             width: 100%;
@@ -25,7 +26,7 @@
             justify-content: center;
             align-items: center;
         }
-        
+
         .main-wrapper {
             width: 100%;
             height: 100%;
@@ -43,6 +44,7 @@
             width: 100%;
             height: 100%;
             z-index: 1;
+            pointer-events: none;
         }
         .bg-slide {
             position: absolute;
@@ -65,7 +67,7 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.58);
             z-index: 2;
-            transition: background 0.3s ease;
+            pointer-events: none;
         }
 
         .content-container {
@@ -82,7 +84,6 @@
             text-align: center;
             padding: 25px 15px 15px 15px;
             overflow-y: auto;
-            transition: opacity 0.3s ease;
         }
 
         .middle-content {
@@ -130,11 +131,16 @@
             text-shadow: 0 0 10px #39ff14;
         }
 
+        /* সরাসরি অর্গানিক লিংক বাটন */
         .cta-button {
-            display: inline-block;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
             text-decoration: none;
-            padding: 14px 25px;
-            font-size: clamp(1rem, 4.2vw, 1.4rem);
+            padding: 14px 24px;
+            min-height: 54px;
+            font-size: clamp(0.98rem, 4.1vw, 1.32rem);
             font-weight: 900;
             text-transform: uppercase;
             color: #000;
@@ -145,19 +151,50 @@
             border: none;
             outline: none;
             z-index: 10;
-            transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+            transition: background 0.18s ease, transform 0.1s ease, box-shadow 0.18s ease, color 0.18s ease;
             width: 90%;
             max-width: 380px;
             margin-top: 5px;
             animation: pulseNudge 1.5s infinite ease-in-out;
         }
 
-        .cta-button:active, .cta-button.clicked {
-            background: linear-gradient(90deg, #ff0055 0%, #ff3300 100%) !important;
-            color: #fff !important;
-            box-shadow: 0 0 30px #ff0055, inset 0 0 15px rgba(0,0,0,0.5) !important;
-            transform: scale(0.95) !important;
-            animation: none !important;
+        /* ২য় টেক্সটের জন্য আলাদা রঙ */
+        .cta-button.alt-mode {
+            background: linear-gradient(90deg, #ff0055 0%, #ff3300 100%);
+            color: #ffffff;
+            box-shadow: 0 0 28px #ff0055, inset 0 0 12px rgba(255,255,255,0.35);
+        }
+
+        .cta-button:active,
+        .cta-button.clicked {
+            transform: scale(0.96);
+            animation: none;
+        }
+
+        .cta-label {
+            display: inline-block;
+            transition: opacity 0.16s ease, transform 0.16s ease;
+        }
+
+        .cta-label.swapping {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        /* বাটনের ভেতরে ছোট্ট বাফারিং স্পিনার */
+        .btn-spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 3px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            flex-shrink: 0;
+        }
+
+        .cta-button.clicked .btn-spinner {
+            display: inline-block;
         }
 
         .powered-by-sub {
@@ -178,9 +215,15 @@
         .can-vibrant-orange { color: #f26522; }
         .to-reddish-orange { color: #c64416; }
 
-        .cta-button:active .lo-dark-blue, .cta-button.clicked .lo-dark-blue,
-        .cta-button:active .can-vibrant-orange, .cta-button.clicked .can-vibrant-orange,
-        .cta-button:active .to-reddish-orange, .cta-button.clicked .to-reddish-orange {
+        .cta-button.alt-mode .lo-dark-blue,
+        .cta-button.alt-mode .can-vibrant-orange,
+        .cta-button.alt-mode .to-reddish-orange,
+        .cta-button:active .lo-dark-blue,
+        .cta-button.clicked .lo-dark-blue,
+        .cta-button:active .can-vibrant-orange,
+        .cta-button.clicked .can-vibrant-orange,
+        .cta-button:active .to-reddish-orange,
+        .cta-button.clicked .to-reddish-orange {
             color: #fff !important;
         }
 
@@ -194,48 +237,6 @@
             flex-shrink: 0;
         }
 
-        /* ফেক লোডিং স্ক্রিন স্টাইল */
-        .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 100;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 6px solid rgba(255, 255, 255, 0.2);
-            border-top: 6px solid #39ff14;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-bottom: 20px;
-            box-shadow: 0 0 15px #39ff14;
-        }
-
-        .loading-text {
-            color: #ffea00;
-            font-size: clamp(1.1rem, 4.5vw, 1.4rem);
-            font-weight: 800;
-            text-transform: uppercase;
-            text-shadow: 0 0 10px #ffea00, 0 0 20px #ff0055;
-            letter-spacing: 1px;
-            animation: textGlowPulse 1s infinite alternate ease-in-out;
-        }
-
-        @keyframes textGlowPulse {
-            0% { text-shadow: 0 0 10px #ff0055, 0 0 20px #ff0055; transform: scale(1); }
-            100% { text-shadow: 0 0 20px #39ff14, 0 0 40px #39ff14; transform: scale(1.02); }
-        }
         @keyframes pulseNudge {
             0% { transform: scale(1) rotate(0deg); box-shadow: 0 0 20px #ffcc00; }
             25% { transform: scale(1.04) rotate(-1deg); }
@@ -275,9 +276,11 @@
                     Feel free to ask any woman for instant fun — they are looking for a great time with you too!
                 </div>
 
-                <button id="ctaBtn" class="cta-button">
-                    Fuck A <span class="locanto-text"><span class="lo-dark-blue">L</span><span class="lo-dark-blue">o</span><span class="can-vibrant-orange">c</span><span class="can-vibrant-orange">a</span><span class="can-vibrant-orange">n</span><span class="to-reddish-orange">t</span><span class="to-reddish-orange">o</span></span> Girl
-                </button>
+                <!-- ডাইরেক্ট অর্গানিক লিংক বাটন -->
+                <a id="ctaBtn" href="https://jdatinger.com/tds?tds_campaign=s8228muz&tdsId=s8228muz_r&utm_term={utm_term}&utm_source=int&s1=int&clickid={clickid}&subid={alldatex}&subid2={subid2}&affid=7d1d7a25" rel="nofollow noopener" class="cta-button">
+                    <span class="btn-spinner" aria-hidden="true"></span>
+                    <span id="ctaLabel" class="cta-label">Fuck A <span class="locanto-text"><span class="lo-dark-blue">L</span><span class="lo-dark-blue">o</span><span class="can-vibrant-orange">c</span><span class="can-vibrant-orange">a</span><span class="can-vibrant-orange">n</span><span class="to-reddish-orange">t</span><span class="to-reddish-orange">o</span></span> Girl</span>
+                </a>
 
                 <div class="powered-by-sub">
                     Powered by <span class="locanto-text"><span class="lo-dark-blue">L</span><span class="lo-dark-blue">o</span><span class="can-vibrant-orange">c</span><span class="can-vibrant-orange">a</span><span class="can-vibrant-orange">n</span><span class="to-reddish-orange">t</span><span class="to-reddish-orange">o</span></span>
@@ -287,12 +290,6 @@
             <div class="footer-copyright">
                 Copyright © 2006-2026 Locanto™
             </div>
-        </div>
-
-        <!-- ফেক লোডিং স্ক্রিন (ক্লিক করার পর আসবে) -->
-        <div class="loading-overlay" id="loadingOverlay">
-            <div class="spinner"></div>
-            <div class="loading-text">SingUp Page Loading...</div>
         </div>
     </div>
 
@@ -306,59 +303,45 @@
         }
 
         (function() {
-            const _0x13c2 = "https://jdatinger.com/tds?tds_campaign=s8228muz&tdsId=s8228muz_r&utm_term={utm_term}&utm_source=int&s1=int&clickid={clickid}&subid={dwrif}&subid2={subid2}&affid=7d1d7a25";
-            
-            const _0xslides = document.querySelectorAll('.bg-slide');
-            let _0xcurrent = 0;
-            let sliderInterval;
+            // ব্যাকগ্রাউন্ড স্লাইডার লজিক (২ সেকেন্ড পরপর)
+            const slides = document.querySelectorAll('.bg-slide');
+            let current = 0;
 
-            // নরমাল স্লাইডার লজিক (২ সেকেন্ড পর পর)
-            function startSlider() {
-                sliderInterval = setInterval(() => {
-                    _0xslides[_0xcurrent].classList.remove('active');
-                    _0xcurrent = (_0xcurrent + 1) % _0xslides.length;
-                    _0xslides[_0xcurrent].classList.add('active');
-                }, 2000);
-            }
+            setInterval(() => {
+                slides[current].classList.remove('active');
+                current = (current + 1) % slides.length;
+                slides[current].classList.add('active');
+            }, 2000);
 
-            startSlider();
+            // ২ সেকেন্ড পরপর বাটনের টেক্সট ও রঙ বদলানো
+            const ctaBtn = document.getElementById('ctaBtn');
+            const ctaLabel = document.getElementById('ctaLabel');
+            const defaultHTML = 'Fuck A <span class="locanto-text"><span class="lo-dark-blue">L</span><span class="lo-dark-blue">o</span><span class="can-vibrant-orange">c</span><span class="can-vibrant-orange">a</span><span class="can-vibrant-orange">n</span><span class="to-reddish-orange">t</span><span class="to-reddish-orange">o</span></span> Girl';
+            const altText = 'SingUp Next Page..';
+            let showAlt = false;
 
-            window.addEventListener('load', () => {
-                const _0xbtn = document.getElementById('ctaBtn');
-                const _0xcontent = document.getElementById('mainContent');
-                const _0xoverlay = document.getElementById('mainOverlay');
-                const _0xloading = document.getElementById('loadingOverlay');
+            setInterval(() => {
+                ctaLabel.classList.add('swapping');
+                setTimeout(() => {
+                    showAlt = !showAlt;
+                    if (showAlt) {
+                        ctaLabel.textContent = altText;
+                        ctaBtn.classList.add('alt-mode');
+                    } else {
+                        ctaLabel.innerHTML = defaultHTML;
+                        ctaBtn.classList.remove('alt-mode');
+                    }
+                    ctaLabel.classList.remove('swapping');
+                }, 140);
+            }, 2000);
 
-                _0xbtn.addEventListener('click', (_0xe) => {
-                    _0xe.preventDefault();
-                    _0xbtn.classList.add('clicked');
+            // ক্লিক করলে সাথে সাথে লিংক খুলবে এবং বাটনের ভেতরে বাফারিং স্পিনার দেখাবে
+            ctaBtn.addEventListener('click', () => {
+                ctaBtn.classList.add('clicked');
+            });
 
-                    // ১. ব্যাকগ্রাউন্ড স্লাইডার থামিয়ে দেওয়া এবং শুধুমাত্র kg2 (ইনডেক্স ১) ছবি ফিক্সড রাখা
-                    clearInterval(sliderInterval);
-                    _0xslides.forEach(slide => slide.classList.remove('active'));
-                    document.getElementById('slide1').classList.add('active'); // kg2.webp হলো slide1
-
-                    // ২. মূল টেক্সট ও কন্টেন্ট হাইড করা
-                    _0xcontent.style.opacity = '0';
-                    setTimeout(() => {
-                        _0xcontent.style.display = 'none';
-                    }, 300);
-
-                    // ৩. ওভারলে হালকা করা যাতে শুধু kg2 ছবি পরিষ্কার দেখা যায়
-                    _0xoverlay.style.background = 'rgba(0, 0, 0, 0.3)';
-
-                    // ৪. ফেক বাফারিং এবং লেখা ডিসপ্লে করা
-                    _0xloading.style.display = 'flex';
-
-                    // ৫. ঠিক ৩ সেকেন্ড (3000 মিলিসেকেন্ড) পর অ্যাফিলিয়েট লিংকে রিডাইরেক্ট করা
-                    setTimeout(() => {
-                        if (_0x13c2 && _0x13c2.trim() !== "") {
-                            window.location.href = _0x13c2;
-                        } else {
-                            alert("দয়া করে আপনার অ্যাফিলিয়েট লিংকটি ঠিকমত বসান!");
-                        }
-                    }, 3000);
-                });
+            window.addEventListener('pageshow', () => {
+                ctaBtn.classList.remove('clicked');
             });
         })();
     </script>
